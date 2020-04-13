@@ -1,6 +1,15 @@
+/**
+ * Canvas.js
+ * Creates a Canvas object used to draw game objects
+ */
+
+// The default dimensions of the canvas
 const defaultWidth = 1024
 const defualtHeight = 720
 
+/**
+ * Constructs a Canvas
+ */
 export default function Canvas (width, height) {
   // Create html canvas element
   const canvas = document.createElement('canvas')
@@ -13,6 +22,10 @@ export default function Canvas (width, height) {
 
   // Insert canvas element into the document
   document.body.appendChild(canvas)
+
+  // Position of the canvas
+  let viewX = 0
+  let viewY = 0
 
   /**
    * Draws a rectangle with the given coordinates and dimensions.
@@ -52,5 +65,35 @@ export default function Canvas (width, height) {
     } else {
       this.drawSprite(...args)
     }
+  }
+
+  /**
+   * Functions to set the viewport position
+   */
+  this.setView = (x, y) => {
+    viewX = x
+    viewY = y
+  }
+  this.setViewX = x => {
+    viewX = x
+  }
+  this.setViewY = y => {
+    viewY = y
+  }
+
+  /**
+   * Functions to retrieve the current viewport position
+   */
+  this.getView = () => {
+    return {
+      x: viewX,
+      y: viewY
+    }
+  }
+  this.getViewX = () => {
+    return viewX
+  }
+  this.getViewY = () => {
+    return viewY
   }
 }
