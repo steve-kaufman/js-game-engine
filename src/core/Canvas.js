@@ -27,6 +27,10 @@ export default function Canvas (width, height) {
   let viewX = 0
   let viewY = 0
 
+  this.clear = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
   /**
    * Draws a rectangle with the given coordinates and dimensions.
    * It will be filled by default, unless isFilled is explicitly false.
@@ -46,12 +50,14 @@ export default function Canvas (width, height) {
    * Draws a sprite at the specified coordinates.
    * The coordinates will be (0, 0) by default
    */
-  this.drawSprite = (sprite, x, y) => {
+  this.drawSprite = (spriteObj, x, y) => {
     // Position is be (0, 0) by default
     if (!x) x = 0
     if (!y) y = 0
 
-    ctx.drawImage(sprite.getSprite(), x, y, sprite.width, sprite.height)
+    const sprite = spriteObj.get()
+
+    ctx.drawImage(sprite, x, y, sprite.width, sprite.height)
   }
 
   /**
