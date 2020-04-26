@@ -1,5 +1,6 @@
 import Game from './core/Game'
 import GameObject from './core/GameObject'
+import BoxCollider from './components/BoxCollider'
 
 const game = new Game(false)
 
