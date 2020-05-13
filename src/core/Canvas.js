@@ -27,18 +27,18 @@ export default function Canvas (width, height) {
   let viewX = 0
   let viewY = 0
 
+  /**
+   * Clears the entire canvas
+   */
   this.clear = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
   }
 
   /**
    * Draws a rectangle with the given coordinates and dimensions.
-   * It will be filled by default, unless isFilled is explicitly false.
+   * It will be stroked by default, unless isFilled is true
    */
   this.drawRect = (x, y, width, height, isFilled) => {
-    // isFilled is true by default
-    if (isFilled !== false) isFilled = true
-
     if (isFilled) {
       ctx.fillRect(x, y, width, height)
     } else {
@@ -48,13 +48,8 @@ export default function Canvas (width, height) {
 
   /**
    * Draws a sprite at the specified coordinates.
-   * The coordinates will be (0, 0) by default
    */
   this.drawSprite = (spriteObj, x, y) => {
-    // Position is be (0, 0) by default
-    if (!x) x = 0
-    if (!y) y = 0
-
     const sprite = spriteObj.get()
 
     ctx.drawImage(sprite, x, y, sprite.width, sprite.height)
@@ -72,6 +67,11 @@ export default function Canvas (width, height) {
       this.drawSprite(...args)
     }
   }
+
+  /**
+   * Returns the HTML canvas element
+   */
+  this.getCanvas = () => canvas
 
   /**
    * Functions to set the viewport position

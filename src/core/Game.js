@@ -13,8 +13,12 @@ export default function Game (shouldStart = true) {
   // Game starts on initialization unless given false as parameter
   let isRunning = shouldStart
 
+  let canvas
+
   // Canvas object
-  const canvas = new Canvas()
+  if (process.env.NODE_ENV !== 'test') {
+    canvas = new Canvas()
+  }
 
   /**
    * Updates all GameObjects
@@ -24,6 +28,7 @@ export default function Game (shouldStart = true) {
       gameObject.update()
     })
 
+    // run update loop again in (1 / updateRate) seconds
     if (isRunning) {
       setTimeout(update, 1000 / updateRate)
     }
@@ -39,6 +44,7 @@ export default function Game (shouldStart = true) {
       gameObject.render(canvas)
     })
 
+    // run render again as soon as possible, at discretion of browser
     if (isRunning) {
       requestAnimationFrame(render)
     }
@@ -59,6 +65,9 @@ export default function Game (shouldStart = true) {
   this.stop = () => {
     isRunning = false
   }
+
+  /** Returns true if game is running */
+  this.getIsRunning = () => isRunning
 
   /**
    * Starts loops immediately unless given false as a parameter

@@ -13,7 +13,7 @@ const collection = []
 /**
  * Creates a GameObject object
  */
-export default function GameObject (options) {
+export default function GameObject (options = {}) {
   const { x, y, width, height, name } = options
 
   this.id = collection.length
@@ -52,6 +52,8 @@ export default function GameObject (options) {
     if (component.onAdd) {
       component.onAdd()
     }
+
+    return component
   }
 
   this.removeComponent = (component) => {
@@ -61,13 +63,15 @@ export default function GameObject (options) {
     }
   }
 
+  this.getComponents = () => [...components]
+
   this.addComponent(new Transform(x, y, width, height))
   this.addComponent(new BoxOutline())
 
   collection.push(this)
 }
 
-GameObject.all = () => collection
+GameObject.all = () => [...collection]
 GameObject.find = (name) => {
   return collection.find(gameObject => (gameObject.name === name))
 }

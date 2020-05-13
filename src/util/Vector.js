@@ -1,23 +1,27 @@
 /**
  * returns a vector object with values x and y
- * @param {number} x 
- * @param {number} y 
+ * @param {number} x
+ * @param {number} y
  */
-function Vector (x, y) {
+export function Vector (x, y) {
   this.x = x
   this.y = y
 
   this.add = (other) => {
-    Vector.add(this, other)
+    this.x += other.x
+    this.y += other.y
   }
   this.subtract = (other) => {
-    Vector.subtract(this, other)
+    this.x -= other.x
+    this.y -= other.y
   }
   this.multiplyBy = (other) => {
-    Vector.multiply(this, other)
+    this.x *= other.x
+    this.y *= other.y
   }
   this.divideBy = (other) => {
-    Vector.divide(this, other)
+    this.x /= other.x
+    this.y /= other.y
   }
 }
 
