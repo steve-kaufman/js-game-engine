@@ -71,7 +71,7 @@ describe('detectCollision', () => {
     expect(twoCollidesWithThree).toBe(false)
   })
 
-  it('returns true if objects align horizontally and vertically', () => {
+  it('returns a collision if objects align horizontally and vertically', () => {
     // arrange
     const obj1 = new GameObject({ x: 10, y: 10, width: 20, height: 20 })
     const obj2 = new GameObject({ x: 15, y: 15, width: 20, height: 20 })

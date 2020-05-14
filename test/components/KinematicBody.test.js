@@ -8,7 +8,7 @@ describe('KinematicBody', () => {
   const game = new Game(false)
 
   beforeEach(() => {
-    gameObj = new GameObject({ x: 100, y: 100, width: 10, height: 10 })
+    gameObj = new GameObject({ x: 100, y: 100, width: 10, height: 20 })
     gameObj.addComponent(new BoxCollider())
     gameObj.addComponent(new KinematicBody())
   })
@@ -34,6 +34,42 @@ describe('KinematicBody', () => {
       const { transform, kinematicBody } = gameObj
 
       game.next()
+      transform.x -= 2
+      transform.y -= 3
+      game.next()
+
+      const corner = kinematicBody.getCorners()[0]
+
+      // act
+      const trajectory = kinematicBody.getTrajectory(corner.x - 2)
+
+      // assert
+      expect(trajectory).toBe(corner.y - 3)
+    })
+
+    it('uses the top-right corner', () => {
+      // arrange
+      const { transform, kinematicBody } = gameObj
+
+      game.next()
+      transform.x += 2
+      transform.y -= 3
+      game.next()
+
+      const corner = kinematicBody.getCorners()[1]
+
+      // act
+      const trajectory = kinematicBody.getTrajectory(corner.x + 2)
+
+      // assert
+      expect(trajectory).toBe(corner.y - 3)
+    })
+
+    it('uses the bottom-right corner', () => {
+      // arrange
+      const { transform, kinematicBody } = gameObj
+
+      game.next()
       transform.x += 2
       transform.y += 3
       game.next()
@@ -42,6 +78,23 @@ describe('KinematicBody', () => {
 
       // act
       const trajectory = kinematicBody.getTrajectory(corner.x + 2)
+
+      // assert
+      expect(trajectory).toBe(corner.y + 3)
+    })
+    it('uses the bottom-left corner', () => {
+      // arrange
+      const { transform, kinematicBody } = gameObj
+
+      game.next()
+      transform.x -= 2
+      transform.y += 3
+      game.next()
+
+      const corner = kinematicBody.getCorners()[3]
+
+      // act
+      const trajectory = kinematicBody.getTrajectory(corner.x - 2)
 
       // assert
       expect(trajectory).toBe(corner.y + 3)

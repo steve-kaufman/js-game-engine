@@ -19,42 +19,42 @@ export default function KinematicBody () {
 
   this.getLastPos = () => ({ ...lastPos })
 
-  this.getDirection = () => {
-    // for flat slope, either right or left
-    if (slope === 0) {
-      if (velocity.x > 0) return 'right'
+  // this.getDirection = () => {
+  //   // for flat slope, either right or left
+  //   if (slope === 0) {
+  //     if (velocity.x > 0) return 'right'
 
-      if (velocity.x < 0) return 'left'
+  //     if (velocity.x < 0) return 'left'
 
-      return null
-    }
-    // for vertical slope, either up or down
-    if (slope === Infinity) {
-      if (velocity.y > 0) return 'down'
+  //     return null
+  //   }
+  //   // for vertical slope, either up or down
+  //   if (slope === Infinity) {
+  //     if (velocity.y > 0) return 'down'
 
-      if (velocity.y < 0) return 'up'
+  //     if (velocity.y < 0) return 'up'
 
-      return null
-    }
+  //     return null
+  //   }
 
-    // must be diagonal
-    if (velocity.y < 0) {
-      if (velocity.x > 0) {
-        return 'up-right'
-      }
-      if (velocity.x < 0) {
-        return 'up-left'
-      }
-    }
-    if (velocity.y > 0) {
-      if (velocity.x > 0) {
-        return 'down-right'
-      }
-      if (velocity.x < 0) {
-        return 'down-left'
-      }
-    }
-  }
+  //   // must be diagonal
+  //   if (velocity.y < 0) {
+  //     if (velocity.x > 0) {
+  //       return 'up-right'
+  //     }
+  //     if (velocity.x < 0) {
+  //       return 'up-left'
+  //     }
+  //   }
+  //   if (velocity.y > 0) {
+  //     if (velocity.x > 0) {
+  //       return 'down-right'
+  //     }
+  //     if (velocity.x < 0) {
+  //       return 'down-left'
+  //     }
+  //   }
+  // }
 
   this.getCorners = () => {
     const { transform } = this.parent
@@ -88,9 +88,6 @@ export default function KinematicBody () {
       // use bottom left corner
       corner = corners[3]
     }
-
-    console.log({ x })
-    console.log(corner)
 
     return (velocity.y / velocity.x) * (x - corner.x) + corner.y
   }
