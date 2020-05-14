@@ -24,8 +24,18 @@ export default function GameObject (options = {}) {
 
   this.update = () => {
     components.forEach(component => {
+      if (component.preUpdate) {
+        component.preUpdate()
+      }
+    })
+    components.forEach(component => {
       if (component.update) {
         component.update()
+      }
+    })
+    components.forEach(component => {
+      if (component.postUpdate) {
+        component.postUpdate()
       }
     })
   }
@@ -47,8 +57,11 @@ export default function GameObject (options = {}) {
     if (component.name) {
       this[component.name] = component
     }
+
     components.push(component)
+
     component.parent = this
+
     if (component.onAdd) {
       component.onAdd()
     }

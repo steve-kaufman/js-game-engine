@@ -5,6 +5,10 @@
 
 import Canvas from './Canvas'
 import GameObject from './GameObject'
+import Input from './Input'
+import BoxCollider from '../components/BoxCollider'
+import KinematicBody from '../components/KinematicBody'
+import Physics from './Physics'
 
 // Frequency of update loop (ticks per second)
 const updateRate = 30
@@ -27,6 +31,10 @@ export default function Game (shouldStart = true) {
     GameObject.all().forEach(gameObject => {
       gameObject.update()
     })
+    Input.clear()
+
+    Physics.cleanup()
+    Physics.update()
 
     // run update loop again in (1 / updateRate) seconds
     if (isRunning) {
@@ -64,6 +72,10 @@ export default function Game (shouldStart = true) {
    */
   this.stop = () => {
     isRunning = false
+  }
+
+  this.next = () => {
+    update()
   }
 
   /** Returns true if game is running */

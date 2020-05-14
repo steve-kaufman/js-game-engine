@@ -7,7 +7,7 @@
     "dev": "concurrently 'npm:webpack-watch' 'npm:serve'",
     "webpack-watch": "webpack --watch",
     "serve": "serve dist",
-    "test": "SET NODE_ENV=test& jest"
+    "test": "SET NODE_ENV=test& jest --watch"
   },
   "repository": {
     "type": "git",

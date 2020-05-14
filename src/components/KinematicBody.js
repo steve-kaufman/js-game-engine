@@ -1,84 +1,141 @@
 import { Vector } from '../util'
 
+const collection = []
+
 export default function KinematicBody () {
   this.name = 'kinematicBody'
 
-  this.lastPos = this.parent.transform.getPos()
+  let lastPos = new Vector()
 
-  this.velocity = new Vector(0, 0)
+  let slope = 0
 
-  this.direction = null
+  let corners = []
+
+  const velocity = new Vector(0, 0)
+
+  this.grounded = false
+
+  this.getVelocity = () => ({ ...velocity })
+
+  this.getLastPos = () => ({ ...lastPos })
 
   this.getDirection = () => {
     // for flat slope, either right or left
-    if (this.slope === 0) {
-      if (this.velocity.x > 0) return 'right'
+    if (slope === 0) {
+      if (velocity.x > 0) return 'right'
 
-      if (this.velocity.x < 0) return 'left'
+      if (velocity.x < 0) return 'left'
 
       return null
     }
     // for vertical slope, either up or down
-    if (this.slope === Infinity) {
-      if (this.velocity.y > 0) return 'down'
-      
-      if (this.velocity.y < 0) return 'up'
+    if (slope === Infinity) {
+      if (velocity.y > 0) return 'down'
+
+      if (velocity.y < 0) return 'up'
 
       return null
     }
 
     // must be diagonal
-    if (this.velocity.y < 0) {
-      if (this.velocity.x > 0) {
+    if (velocity.y < 0) {
+      if (velocity.x > 0) {
         return 'up-right'
       }
-      if (this.velocity.x < 0) {
+      if (velocity.x < 0) {
         return 'up-left'
       }
     }
-    if (this.velocity.y > 0) {
-      if (this.velocity.x > 0) {
+    if (velocity.y > 0) {
+      if (velocity.x > 0) {
         return 'down-right'
       }
-      if (this.velocity.x < 0) {
+      if (velocity.x < 0) {
         return 'down-left'
       }
     }
   }
 
-  this.trajectory = function (x, corner) {
-    const box = parent.transform.get()
+  this.getCorners = () => {
+    const { transform } = this.parent
 
-    if (corner === 'top-right') {
-      // use upper right corner
-      return slope * (x - (box.x + box.width)) + box.y
-    }
-    if (corner === 'bottom-right') {
-      // use lower right corner
-      return slope * (x - (box.x + box.width)) + box.y + box.height
-    }
-    if (corner === 'top-left') {
-      // use upper left corner
-      return slope * (x) + box.y
-    }
-    if (corner === 'bottom-left') {
-      // use lower left corner
-      return slope * (x) + box.y + box.height
-    }
-
-    throw new Error('Not a valid corner')
+    return [
+      new Vector(transform.x, transform.y),
+      new Vector(transform.x + transform.width, transform.x),
+      new Vector(transform.x + transform.width, transform.y + transform.height),
+      new Vector(transform.x, transform.y + transform.height)
+    ]
   }
 
-  this.update = () => {
-    const position = this.parent.transform.getPos()
+  /**
+   * Takes in absolute x coordinate
+   * Outputs y value using trajectory line (based on velocity)
+   */
+  this.getTrajectory = function (x) {
+    // find correct corner
+    let corner
 
-    this.velocity.x = position.x - lastPos.x
-    this.velocity.y = position.y - lastPos.y
+    if (velocity.x < 0 && velocity.y < 0) {
+      // use top-left corner
+      corner = corners[0]
+    } else if (velocity.x > 0 && velocity.y < 0) {
+      // use top-right corner
+      corner = corners[1]
+    } else if (velocity.x > 0 && velocity.y > 0) {
+      // use bottom right corner
+      corner = corners[2]
+    } else if (velocity.x < 0 && velocity.y > 0) {
+      // use bottom left corner
+      corner = corners[3]
+    }
 
-    this.slope = velocity.y / velocity.x
+    console.log({ x })
+    console.log(corner)
 
-    this.direction = this.getDirection()
-
-    this.lastPos = position
+    return (velocity.y / velocity.x) * (x - corner.x) + corner.y
   }
+
+  this.physicsUpdate = () => {
+    const { transform, boxCollider } = this.parent
+
+    velocity.x = transform.x - lastPos.x
+    velocity.y = transform.y - lastPos.y
+
+    // transform.setX(transform.x + velocity.x)
+    // transform.setY(transform.y + velocity.y)
+
+    slope = velocity.y / velocity.x
+
+    corners = this.getCorners()
+
+    this.grounded = false
+
+    boxCollider.collisions.forEach(collision => {
+      const { other, side } = collision
+
+      if (side === 'right') {
+        transform.x = other.transform.x - transform.width
+      }
+      if (side === 'left') {
+        transform.x = other.transform.x + other.transform.width
+      }
+      if (side === 'top') {
+        transform.y = other.transform.y + other.transform.height
+      }
+      if (side === 'bottom') {
+        transform.y = other.transform.y - transform.height
+        this.grounded = true
+      }
+    })
+
+    lastPos = transform.getPos()
+  }
+
+  this.onAdd = () => {
+    lastPos = this.parent.transform.getPos()
+  }
+
+  collection.push(this)
 }
+
+KinematicBody.all = () => [...collection]
