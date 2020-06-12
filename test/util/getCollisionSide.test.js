@@ -1,3 +1,4 @@
+/* eslint-env jest */
 import GameObject from '../../src/core/GameObject'
 import { getCollisionSide } from '../../src/util/index'
 import BoxCollider from '../../src/components/BoxCollider'

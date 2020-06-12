@@ -1,61 +1,33 @@
 import { Vector } from '../util'
 
-const collection = []
-
 export default function KinematicBody () {
   this.name = 'kinematicBody'
 
+  // Keep track of position from last tick, to calculate velocity
   let lastPos = new Vector()
 
-  let slope = 0
-
+  // Keep track of each corner
   let corners = []
 
+  // Keep track of velocity
   const velocity = new Vector(0, 0)
 
+  // Whether or not body is having a bottom collision
   this.grounded = false
 
+  /**
+   * Returns velocity vector
+   */
   this.getVelocity = () => ({ ...velocity })
 
+  /**
+   * Returns lastPost vector
+   */
   this.getLastPos = () => ({ ...lastPos })
 
-  // this.getDirection = () => {
-  //   // for flat slope, either right or left
-  //   if (slope === 0) {
-  //     if (velocity.x > 0) return 'right'
-
-  //     if (velocity.x < 0) return 'left'
-
-  //     return null
-  //   }
-  //   // for vertical slope, either up or down
-  //   if (slope === Infinity) {
-  //     if (velocity.y > 0) return 'down'
-
-  //     if (velocity.y < 0) return 'up'
-
-  //     return null
-  //   }
-
-  //   // must be diagonal
-  //   if (velocity.y < 0) {
-  //     if (velocity.x > 0) {
-  //       return 'up-right'
-  //     }
-  //     if (velocity.x < 0) {
-  //       return 'up-left'
-  //     }
-  //   }
-  //   if (velocity.y > 0) {
-  //     if (velocity.x > 0) {
-  //       return 'down-right'
-  //     }
-  //     if (velocity.x < 0) {
-  //       return 'down-left'
-  //     }
-  //   }
-  // }
-
+  /**
+   * Calculates position of each corner and returns array of vectors
+   */
   this.getCorners = () => {
     const { transform } = this.parent
 
@@ -92,47 +64,63 @@ export default function KinematicBody () {
     return (velocity.y / velocity.x) * (x - corner.x) + corner.y
   }
 
-  this.physicsUpdate = () => {
-    const { transform, boxCollider } = this.parent
+  /**
+   * Sets information for collision detection
+   */
+  this.beforeCollisions = () => {
+    const { transform } = this.parent
 
+    // Assume there is no bottom collision until proven
+    this.grounded = false
+
+    // Calculate velocity vector
     velocity.x = transform.x - lastPos.x
     velocity.y = transform.y - lastPos.y
 
-    // transform.setX(transform.x + velocity.x)
-    // transform.setY(transform.y + velocity.y)
-
-    slope = velocity.y / velocity.x
-
+    // Set corners
     corners = this.getCorners()
-
-    this.grounded = false
-
-    boxCollider.collisions.forEach(collision => {
-      const { other, side } = collision
-
-      if (side === 'right') {
-        transform.x = other.transform.x - transform.width
-      }
-      if (side === 'left') {
-        transform.x = other.transform.x + other.transform.width
-      }
-      if (side === 'top') {
-        transform.y = other.transform.y + other.transform.height
-      }
-      if (side === 'bottom') {
-        transform.y = other.transform.y - transform.height
-        this.grounded = true
-      }
-    })
-
-    lastPos = transform.getPos()
   }
 
-  this.onAdd = () => {
+  /**
+   * Collision handler for kinematicBody
+   * Adjusts body based on collision side
+   */
+  this.handleCollision = ({ other, side }) => {
+    const { transform } = this.parent
+
+    if (side === 'right') {
+      // Make body flush with left side of other
+      transform.x = other.transform.x - transform.width
+    }
+    if (side === 'left') {
+      // Make body flush with right side of other
+      transform.x = other.transform.x + other.transform.width
+    }
+    if (side === 'top') {
+      // Make body flush with bottom side of other
+      transform.y = other.transform.y + other.transform.height
+    }
+    if (side === 'bottom') {
+      // Make body flush with top side of other
+      transform.y = other.transform.y - transform.height
+      // Body is grounded
+      this.grounded = true
+    }
+  }
+
+  /**
+   * Runs before update loop
+   */
+  this.preUpdate = () => {
+    // Set 'lastPos' to current position, before updates take place
     lastPos = this.parent.transform.getPos()
   }
 
-  collection.push(this)
+  /**
+   * Runs when component is added to GameObject
+   */
+  this.onAdd = () => {
+    // Set lastPos to initial transform position
+    lastPos = this.parent.transform.getPos()
+  }
 }
-
-KinematicBody.all = () => [...collection]

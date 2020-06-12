@@ -1,3 +1,4 @@
+/* eslint-env jest */
 import GameObject from '../../src/core/GameObject'
 import { detectCollision, getCollisionSide } from '../../src/util'
 import KinematicBody from '../../src/components/KinematicBody'
